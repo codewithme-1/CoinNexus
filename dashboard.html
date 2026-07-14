@@ -112,32 +112,35 @@
         .toast{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--emerald);padding:16px 20px;border-radius:8px;color:var(--white);font-size:.9rem;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(-20px);transition:.3s;pointer-events:all}
         .toast.active{opacity:1;transform:translateY(0)}
         .toast i{color:var(--emerald);font-size:1.2rem}
-
-        /* 1. Ensure the body doesn't scroll itself */
-body {
-    height: 100vh;
-    overflow: hidden; 
-    display: flex;
-    flex-direction: column;
-}
-
-/* 2. Make the scrollable area take up all remaining space */
-.content-scroll {
-    flex: 1;
-    overflow-y: auto; /* Allows scrolling only inside this box */
-    padding-bottom: 20px; /* Space before the nav bar */
-}
-
-/* 3. Ensure the nav bar is fixed */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 1000;
-    background: var(--surface);
-    /* ... rest of your existing nav styles */
-}
     </style>
+    <style>
+    /* Force the entire page to fill the screen and not exceed it */
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden; /* Prevents the whole page from scrolling */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* The main wrapper that will scroll */
+    .content-scroll {
+        flex: 1; /* Fills all available space between header and nav */
+        overflow-y: auto; /* Enables scrolling only inside this section */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
+    }
+
+    /* Ensure bottom nav is always at the bottom */
+    .bottom-nav {
+        flex-shrink: 0; /* Prevents the nav bar from squishing */
+        height: 70px; /* Explicit height */
+        background: var(--surface);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid var(--border);
+    }
+</style>
 </head>
 <body>
 
