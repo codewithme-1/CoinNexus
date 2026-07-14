@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | CoinNexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121418;
+            --surface: #1e222d;
+            --surface-hover: #2a2e39;
+            --primary: #00e676;
+            --text-main: #ffffff;
+            --text-muted: #8b98a9;
+            --info: #00e676;
+            --border: #2a2e39;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+
+        /* Navigation */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+        .nav-icons i { font-size: 1.2rem; margin-left: 15px; cursor: pointer; color: var(--text-muted); }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+
+        /* Profile Header */
+        .profile-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; text-align: center; }
+        .avatar { width: 70px; height: 70px; background: var(--info); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        .profile-header h2 { font-size: 1.4rem; margin-bottom: 5px; font-weight: 700; }
+        .profile-header p { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Sections */
+        .section-card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+        .section-title { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--info); }
+        .section-content { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+        
+        .info-group { display: flex; flex-direction: column; gap: 6px; }
+        .info-group label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-group span { font-size: 1rem; font-weight: 600; word-break: break-all; color: var(--text-main); }
+        
+        .alert-banner { background: transparent; border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 8px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--info); margin-bottom: 5px; background: rgba(0, 230, 118, 0.05); }
+
+        /* Buttons */
+        .btn-outline { width: 100%; background: transparent; border: 1px solid var(--info); color: var(--info); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .btn-outline:hover { background: rgba(0, 230, 118, 0.1); }
+        .btn-primary { width: 100%; background: var(--primary); border: none; color: #000; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-color); width: 90%; max-width: 400px; border-radius: 16px; border: 1px solid var(--border); padding: 20px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
+        .form-control { width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; }
+        .form-control:disabled { opacity: 0.6; cursor: not-allowed; background: #121418; border-color: #333; }
+
+        /* Toasts */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--surface-hover); color: white; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s ease; }
+        .toast.active { transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="logo"><i class="fa-brands fa-bitcoin"></i> CoinNexus</div>
+        <div class="nav-icons">
+            <i class="fa-solid fa-right-from-bracket" onclick="logout()" title="Logout"></i>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="avatar" id="avatarInitial"><i class="fa-solid fa-spinner fa-spin"></i></div>
+            <h2 id="displayFullName">Loading...</h2>
+            <p><span data-i18n="memberSince">Member since</span> <span id="displayMemberSince">...</span></p>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="section-card">
+            <div class="section-title"><i class="fa-regular fa-user"></i> <span data-i18n="personalInfo">Personal Information</span></div>
+            <div class="section-content">
+                <div class="info-group">
+                    <label data-i18n="fullName">Full Name</label>
+                    <span id="infoFullName">...</span>
+                </div>
+                <div class="info-group">
+                    <label data-i18n="emailAddress">Email Address</label>
+                    <span id="infoEmail">...</span>
+                </div>
+                <div class="info-group">
+                    <label data-i18n="phoneNumber">Phone Number</label>
+                    <span id="infoPhone">...</span>
+                </div>
+                <div class="info-group">
+                    <label data-i18n="accountType">Account Type</label>
+                    <span>Standard</span>
+                </div>
+                <button class="btn-outline" onclick="openModal('editInfoModal')"><i class="fa-solid fa-pen-to-square"></i> <span data-i18n="editInfo">Edit Information</span></button>
+            </div>
+        </div>
+
+        <!-- Account Security -->
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="accountSecurity">Account Security</span></div>
+            <div class="section-content">
+                <div class="alert-banner">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span data-i18n="lastPasswordChange">Last password change: Never</span>
+                </div>
+                <div class="info-group">
+                    <label data-i18n="twoFactor">Two-Factor Authentication</label>
+                    <span data-i18n="disabled" style="font-weight: normal; color: var(--text-muted);">Disabled</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="section-card">
+            <div class="section-title"><i class="fa-solid fa-gear"></i> <span data-i18n="preferences">Preferences</span></div>
+            <div class="section-content">
+                <div class="info-group">
+                    <label data-i18n="language">Language</label>
+                    <span id="prefLanguage">English</span>
+                </div>
+                <button class="btn-outline" onclick="openModal('preferencesModal')"><i class="fa-solid fa-sliders"></i> <span data-i18n="editPreferences">Edit Preferences</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Edit Information Modal -->
+    <div class="modal-overlay" id="editInfoModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeModals()"></i>
+            <h3 style="margin-bottom: 20px;" data-i18n="editInfo">Edit Information</h3>
+            <form id="editInfoForm">
+                <div class="form-group">
+                    <label data-i18n="fullName">Full Name</label>
+                    <input type="text" class="form-control" id="editFullName" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="emailAddress">Email Address (Cannot be changed)</label>
+                    <input type="email" class="form-control" id="editEmail" disabled readonly>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="phoneNumber">Phone Number</label>
+                    <input type="text" class="form-control" id="editPhone" required>
+                </div>
+                <button type="submit" class="btn-primary" id="saveInfoBtn"><span data-i18n="saveChanges">Save Changes</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Preferences Modal -->
+    <div class="modal-overlay" id="preferencesModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeModals()"></i>
+            <h3 style="margin-bottom: 20px;" data-i18n="editPreferences">Edit Preferences</h3>
+            <form id="preferencesForm">
+                <div class="form-group">
+                    <label data-i18n="language">Language</label>
+                    <select class="form-control" id="selectLanguage">
+                        <option value="en">English</option>
+                        <option value="es">Español (Spanish)</option>
+                        <option value="fr">Français (French)</option>
+                        <option value="sw">Kiswahili (Swahili)</option>
+                        <option value="de">Deutsch (German)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary"><span data-i18n="savePreferences">Save Preferences</span></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span data-i18n="navHome">Home</span></a>
+        <a href="markets.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span data-i18n="navMarkets">Markets</span></a>
+        <a href="bot.html" class="nav-item"><i class="fa-solid fa-robot"></i><span data-i18n="navBots">Bots</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fa-regular fa-user"></i><span data-i18n="navProfile">Profile</span></a>
+    </nav>
+
+    <script src="profile.js"></script>
+    <script src="i18n.js"></script>
+</body>
+</html>

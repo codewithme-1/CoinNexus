@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markets | CoinNexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121418;
+            --surface: #1e222d;
+            --primary: #00e676;
+            --text-main: #ffffff;
+            --text-muted: #8b98a9;
+            --border: #2a2e39;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow: hidden; } /* Hide body scroll for full chart */
+
+        /* Desktop Sidebar (Hidden on Mobile) */
+        aside { display: none; width: 250px; height: 100vh; background: var(--surface); position: fixed; top: 0; left: 0; border-right: 1px solid var(--border); flex-direction: column; padding: 20px 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; padding: 0 20px; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; flex-direction: column; gap: 5px; padding: 0 10px; flex-grow: 1; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); padding: 12px 20px; border-radius: 8px; display: flex; align-items: center; gap: 15px; font-weight: 600; transition: 0.2s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(0, 230, 118, 0.1); color: var(--primary); }
+        .logout-btn { margin: 0 20px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; transition: 0.2s; }
+        .logout-btn:hover { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border-color: #ff4d4d; }
+
+        /* Mobile Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+        .mobile-logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .header-actions { display: flex; gap: 15px; }
+        .icon-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+
+        /* Mobile Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.2rem; }
+
+        /* Chart Container */
+        .chart-wrapper {
+            height: calc(100vh - 120px); /* Height minus mobile header and bottom nav */
+            width: 100%;
+        }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+            aside { display: flex; }
+            header, .bottom-nav { display: none; }
+            .chart-wrapper {
+                margin-left: 250px;
+                height: 100vh;
+                width: calc(100% - 250px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Desktop Sidebar -->
+    <aside>
+        <a href="#" class="logo"><i class="fa-brands fa-btc"></i> COINNEXUS</a>
+        <div class="nav-links">
+            <a href="dashboard.html"><i class="fa-solid fa-house"></i> <span data-i18n="navHome">Home</span></a>
+            <a href="markets.html" class="active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="navMarkets">Markets</span></a>
+            <a href="bot.html"><i class="fa-solid fa-robot"></i> <span data-i18n="navBots">Bots</span></a>
+            <a href="history.html"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+        </div>
+        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Disconnect</button>
+    </aside>
+
+    <main>
+        <!-- Mobile Header -->
+        <header>
+            <a href="#" class="mobile-logo"><i class="fa-brands fa-btc"></i> COINNEXUS</a>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </header>
+
+        <!-- TradingView Chart Container -->
+        <div class="chart-wrapper">
+            <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
+        </div>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> <span data-i18n="navHome">Home</span></a>
+            <a href="markets.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i> <span data-i18n="navMarkets">Markets</span></a>
+            <a href="bot.html" class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="navBots">Bots</span></a>
+            <a href="profile.html" class="nav-item"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a>
+        </nav>
+    </main>
+
+    <!-- TradingView External Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="i18n.js"></script>
+    <script src="markets.js"></script>
+</body>
+</html>

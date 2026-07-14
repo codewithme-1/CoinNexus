@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History | CoinNexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles matching platform */
+        :root { --bg-color: #121418; --surface: #1e222d; --primary: #00e676; --text-main: #ffffff; --text-muted: #8b98a9; --border: #2a2e39; --warning: #ffb74d; --danger: #ff4d4d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+
+        /* Top Nav */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--primary); text-decoration: none; }
+        
+        /* Mobile Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .page-header { margin-bottom: 20px; }
+        .page-header h2 { font-size: 1.5rem; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: var(--surface); padding: 5px; border-radius: 10px; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: var(--border); color: var(--text-main); }
+
+        /* List Items */
+        .tx-list { display: flex; flex-direction: column; gap: 10px; }
+        .tx-card { background: var(--surface); border: 1px solid var(--border); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .tx-left { display: flex; align-items: center; gap: 15px; }
+        .tx-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .tx-icon.deposit { background: rgba(0,230,118,0.1); color: var(--primary); }
+        .tx-icon.withdraw { background: rgba(255,183,77,0.1); color: var(--warning); }
+        
+        .tx-info h4 { font-size: 1rem; margin-bottom: 4px; }
+        .tx-info p { font-size: 0.75rem; color: var(--text-muted); }
+        
+        .tx-right { text-align: right; }
+        .tx-right h4 { font-size: 1.1rem; margin-bottom: 4px; }
+        .status-badge { font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: rgba(255,183,77,0.1); color: var(--warning); }
+        .status-approved { background: rgba(0,230,118,0.1); color: var(--primary); }
+        .status-rejected { background: rgba(255,77,77,0.1); color: var(--danger); }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="dashboard.html" class="logo"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        <div style="font-weight: bold;">Transaction History</div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>Ledger History</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Track your deposits and payout statuses.</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('deposits')">Deposits</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">Withdrawals</button>
+        </div>
+
+        <!-- Deposits View -->
+        <div id="view-deposits" class="tx-list">
+            <!-- Mock Data (Replaced by JS later) -->
+            <div class="tx-card">
+                <div class="tx-left">
+                    <div class="tx-icon deposit"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="tx-info">
+                        <h4>M-Pesa Deposit</h4>
+                        <p>Jul 14, 2026 • 11:28 AM</p>
+                    </div>
+                </div>
+                <div class="tx-right">
+                    <h4>+$107.03</h4>
+                    <span class="status-badge status-approved">Approved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Withdrawals View -->
+        <div id="view-withdrawals" class="tx-list" style="display: none;">
+            <!-- Mock Data (Replaced by JS later) -->
+            <div class="tx-card">
+                <div class="tx-left">
+                    <div class="tx-icon withdraw"><i class="fa-solid fa-arrow-up"></i></div>
+                    <div class="tx-info">
+                        <h4>Crypto Withdrawal</h4>
+                        <p>Jul 10, 2026 • 09:15 AM</p>
+                    </div>
+                </div>
+                <div class="tx-right">
+                    <h4>-$50.00</h4>
+                    <span class="status-badge status-pending">Pending Review</span>
+                </div>
+            </div>
+            <div class="tx-card">
+                <div class="tx-left">
+                    <div class="tx-icon withdraw"><i class="fa-solid fa-arrow-up"></i></div>
+                    <div class="tx-info">
+                        <h4>M-Pesa Payout</h4>
+                        <p>Jul 05, 2026 • 14:30 PM</p>
+                    </div>
+                </div>
+                <div class="tx-right">
+                    <h4>-$25.00</h4>
+                    <span class="status-badge status-rejected">Rejected</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> <span data-i18n="navHome">Home</span></a>
+        <a href="markets.html" class="nav-item"><i class="fa-solid fa-chart-line"></i> <span data-i18n="navMarkets">Markets</span></a>
+        <a href="bot.html" class="nav-item"><i class="fa-solid fa-robot"></i> <span data-i18n="navBots">Bots</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a>
+    </nav>
+
+    <script src="i18n.js"></script>
+    <script src="history.js"></script>
+</body>
+</html>

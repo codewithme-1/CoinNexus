@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bots | CoinNexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #121418;
+            --surface: #1e222d;
+            --surface-hover: #2a2e39;
+            --primary: #00e676;
+            --primary-dark: #00b259;
+            --text-main: #ffffff;
+            --text-muted: #8b98a9;
+            --danger: #ff4d4d;
+            --warning: #ffb74d;
+            --info: #2196f3;
+            --border: #2a2e39;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+
+        /* Navigation (Mirrors Dashboard) */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+        .nav-icons i { font-size: 1.2rem; margin-left: 15px; cursor: pointer; color: var(--text-muted); }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--surface); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+
+        /* Bot Header Stats */
+        .bot-header-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .bot-header-card h2 { font-size: 1.2rem; margin-bottom: 5px; }
+        .bot-header-card p { color: #e0e0e0; font-size: 0.85rem; margin-bottom: 15px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+        .stat-box h3 { font-size: 1.4rem; }
+        .stat-box span { font-size: 0.75rem; color: #b0c4de; }
+        .btn-create-bot { width: 100%; background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px; border-radius: 8px; margin-top: 15px; font-weight: bold; }
+
+        /* Bot List Section */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .bot-card { background: var(--surface); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .bot-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .bot-title h3 { font-size: 1.1rem; }
+        .bot-title span { font-size: 0.75rem; color: var(--text-muted); }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #333; color: #ccc; }
+        .status-badge.configured { background: rgba(33, 150, 243, 0.2); color: var(--info); }
+        .status-badge.active { background: rgba(0, 230, 118, 0.2); color: var(--primary); }
+        .bot-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; }
+        .bot-actions { display: flex; gap: 10px; }
+        .btn-outline, .btn-primary { flex: 1; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 0.9rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        /* Live Bot Tracking View */
+        #liveBotView { display: none; }
+        .tracking-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .tracking-status { color: var(--primary); font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .tracking-status i { font-size: 0.6rem; }
+        .live-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-stop { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; }
+        .btn-pause { background: var(--warning); color: #000; border: none; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; }
+        
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .metric-card { background: var(--surface); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+        .metric-card span { color: var(--text-muted); font-size: 0.8rem; }
+        .metric-card h3 { font-size: 1.5rem; margin-top: 5px; }
+        .pnl-positive { color: var(--primary); }
+        .pnl-negative { color: var(--danger); }
+
+        /* Terminal Console */
+        .terminal-box { background: #0a0a0c; border: 1px solid var(--border); border-radius: 8px; padding: 15px; height: 250px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; display: flex; flex-direction: column; gap: 6px; }
+        .log-entry { color: #a0a0a0; }
+        .log-time { color: var(--text-muted); margin-right: 8px; }
+        .log-buy { color: var(--primary); }
+        .log-sell { color: var(--danger); }
+        .log-system { color: var(--info); }
+
+        /* Modals & Toasts */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-color); width: 90%; max-width: 400px; border-radius: 16px; border: 1px solid var(--border); padding: 20px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
+        .form-control { width: 100%; background: var(--surface); border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; }
+        
+        /* The JIT Funding Widget */
+        .jit-funding-widget { background: rgba(255, 183, 77, 0.1); border: 1px solid rgba(255, 183, 77, 0.3); border-radius: 8px; padding: 12px; margin-top: 15px; display: none; }
+        .jit-funding-widget p { font-size: 0.8rem; margin-bottom: 10px; color: #ffcc80; }
+        .btn-jit-swap { width: 100%; background: var(--warning); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--surface-hover); color: white; padding: 12px 20px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s ease; }
+        .toast.active { transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <div class="logo"><i class="fa-brands fa-bitcoin"></i> CoinNexus</div>
+        <div class="nav-icons">
+            <span id="headerUsdBalance" style="font-size: 0.85rem; font-weight: bold; margin-right: 10px; color: var(--primary);">$0.00</span>
+            <i class="fa-regular fa-bell"></i>
+        </div>
+    </nav>
+
+   <div class="container" id="mainBotList">
+        <!-- Header Stats -->
+        <div class="bot-header-card">
+            <h2 data-i18n="automatedTrading">Automated Trading</h2>
+            <p data-i18n="createManage">Create and manage algorithmic strategies.</p>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <h3>4</h3>
+                    <span data-i18n="totalBots">Total Bots</span>
+                </div>
+                <div class="stat-box">
+                    <h3>0</h3>
+                    <span data-i18n="active">Active</span>
+                </div>
+                <div class="stat-box">
+                    <h3 id="botWeeklyReturn" style="color: var(--primary);">+0.0%</h3>
+                    <span data-i18n="weeklyReturn">Weekly Return</span>
+                </div>
+            </div>
+            <button class="btn-create-bot" onclick="showToast('Custom bot creator unlocks at Pro Tier', 'fa-lock')"><span data-i18n="createNewBot">Create New Bot</span> <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div class="section-header">
+            <h3 data-i18n="dcaBots">Dollar-Cost Averaging Bots</h3>
+        </div>
+
+        <!-- Bot Card 1 -->
+        <div class="bot-card" id="botCard-btc-acc">
+            <div class="bot-card-top">
+                <div class="bot-title">
+                    <h3>Bitcoin Accumulation</h3>
+                    <span>Weekly • DCA</span>
+                </div>
+                <div class="status-badge" id="badge-btc-acc" data-i18n="notConfigured">Not Configured</div>
+            </div>
+            <p class="bot-desc">Dollar-cost averaging into Bitcoin on a weekly basis to reduce volatility exposure.</p>
+            <div class="bot-actions">
+                <button class="btn-outline" onclick="openConfigureModal('btc-acc')" data-i18n="configure">Configure</button>
+                <button class="btn-primary" id="startBtn-btc-acc" disabled onclick="startBot('btc-acc')" data-i18n="startBot">Start Bot</button>
+            </div>
+        </div>
+
+        <!-- Bot Card 2 -->
+        <div class="bot-card" id="botCard-eth-pro">
+            <div class="bot-card-top">
+                <div class="bot-title">
+                    <h3>ETH DCA Pro</h3>
+                    <span>Daily • DCA + RSI</span>
+                </div>
+                <div class="status-badge" id="badge-eth-pro" data-i18n="notConfigured">Not Configured</div>
+            </div>
+            <p class="bot-desc">Dynamic DCA based on RSI and volume indicators. Buys heavier during market dips.</p>
+            <div class="bot-actions">
+                <button class="btn-outline" onclick="openConfigureModal('eth-pro')" data-i18n="configure">Configure</button>
+                <button class="btn-primary" id="startBtn-eth-pro" disabled onclick="startBot('eth-pro')" data-i18n="startBot">Start Bot</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Tracking Terminal View -->
+    <div class="container" id="liveBotView">
+        <div class="tracking-header">
+            <div>
+                <h2 id="liveBotTitle">Bitcoin Accumulation</h2>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Bot ID: dca-node-883</span>
+            </div>
+            <div class="tracking-status"><i class="fa-solid fa-circle fa-fade"></i> Running</div>
+        </div>
+
+        <div class="live-controls">
+            <button class="btn-pause" onclick="showToast('Bot paused.', 'fa-pause')">Pause Bot</button>
+            <button class="btn-stop" onclick="stopBot()">Stop Bot</button>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span>Total P/L</span>
+                <h3 id="livePnl" class="pnl-positive">+$0.00</h3>
+            </div>
+            <div class="metric-card">
+                <span>Win Rate</span>
+                <h3 id="liveWinRate">0.0%</h3>
+            </div>
+            <div class="metric-card">
+                <span>Total Trades</span>
+                <h3 id="liveTrades">0</h3>
+            </div>
+            <div class="metric-card">
+                <span>Allocated Balance</span>
+                <h3 id="liveBalance">$0.00</h3>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 10px; font-size: 1rem;">Bot Logs</h3>
+        <div class="terminal-box" id="terminalConsole">
+            <div class="log-entry"><span class="log-system">[System]</span> Establishing connection to trading engine...</div>
+            <div class="log-entry"><span class="log-system">[System]</span> Connection secured. Awaiting market conditions.</div>
+        </div>
+    </div>
+
+    <!-- Configuration Modal -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-modal" onclick="closeModal('configModal')"></i>
+            <h3 style="margin-bottom: 20px;">Configure Bot</h3>
+            
+            <form id="configForm">
+                <input type="hidden" id="activeBotId">
+                <div class="form-group">
+                    <label>Select Asset</label>
+                    <select class="form-control" id="botAsset">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Investment Amount per Trade (USD)</label>
+                    <input type="number" class="form-control" id="botBudget" placeholder="e.g. 100" min="10" required>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 5px;">Minimum: $10</span>
+                </div>
+
+                <!-- JIT Funding Widget (Injected dynamically by JS) -->
+                <div class="jit-funding-widget" id="jitFundingWidget">
+                    <p id="jitMessage">You need $X more to run this bot.</p>
+                    <button type="button" class="btn-jit-swap" id="jitActionBtn">Action</button>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 15px;" id="saveConfigBtn">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span data-i18n="navHome">Home</span></a>
+        <a href="markets.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span data-i18n="navMarkets">Markets</span></a>
+        <a href="bot.html" class="nav-item active"><i class="fa-solid fa-robot"></i><span data-i18n="navBots">Bots</span></a>
+        <a href="profile.html" class="nav-item"><i class="fa-regular fa-user"></i><span data-i18n="navProfile">Profile</span></a>
+    </nav>
+
+    <script src="i18n.js"></script>
+    <script src="bot.js"></script>
+</body>
+</html>
