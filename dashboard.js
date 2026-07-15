@@ -361,15 +361,17 @@ async function handleMpesaDeposit(e) {
 // NOWPayments Deposit Endpoint Hook
 async function handleCryptoDeposit(e) {
     e.preventDefault();
-    const actionBtn = document.getElementById("generateAddressBtn");
     const network = document.getElementById("depCryptoNetwork").value;
+    const btn = document.getElementById("generateAddressBtn");
     
     const userSession = JSON.parse(localStorage.getItem("nexus_user"));
-    const userToken = localStorage.getItem("nexus_session"); // Added for RLS
+    const token = localStorage.getItem("nexus_session");
+
     if (!userSession) return showToast("Session expired. Please log in.", "fa-triangle-exclamation");
 
-    actionBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Initializing Address...`;
-    actionBtn.disabled = true;
+    // Loading State
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Generating...`;
+    btn.disabled = true;
 
     try {
         const response = await fetch(GAS_WEB_APP_URL, {
@@ -377,29 +379,41 @@ async function handleCryptoDeposit(e) {
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'generate_crypto_address',
-                payload: { userId: userSession.id, userToken: userToken, network: network }
+                payload: { userId: userSession.id, userToken: token, network: network }
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
+            // Hide the dropdown input, reveal the address view
             document.getElementById("cryptoInputView").style.display = "none";
             document.getElementById("cryptoQrView").style.display = "block";
-            
+
+            // Inject the live address
             document.getElementById("generatedCryptoAddress").value = result.address;
             
-            showToast("Custodial settlement address assigned.", "fa-qrcode");
+            // Inject the strict minimum deposit warning to protect user funds
+            const instructionEl = document.querySelector(".crypto-instruction");
+            if (instructionEl) {
+                const currencyName = result.currency ? result.currency.toUpperCase() : network;
+                const minAmount = result.min_amount ? result.min_amount : '10';
+                instructionEl.innerHTML = `Send funds exactly to this unique custodial address. <br><br><strong style="color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> Minimum deposit: ${minAmount} ${currencyName}</strong>. Amounts below this will be lost to network fees.`;
+            }
+
+            showToast("Address generated securely.", "fa-check");
         } else {
-            showToast("Failed to generate address.", "fa-triangle-exclamation");
+            showToast(result.message, "fa-triangle-exclamation");
         }
     } catch (err) {
-        showToast("Network error.", "fa-wifi");
+        showToast("Network error generating address.", "fa-wifi");
     } finally {
-        actionBtn.textContent = "Generate Deposit Address";
-        actionBtn.disabled = false;
+        // Reset button state
+        btn.innerHTML = `Generate Deposit Address`;
+        btn.disabled = false;
     }
 }
+
 
 function copyAddress() {
     const field = document.getElementById("generatedCryptoAddress");
