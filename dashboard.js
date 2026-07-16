@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initClock();
     renderWatchlist();
     renderUserAssets();
+    initLiveChat(); // Added to trigger the Tawk.to chat widget on load
     
     // Bind Logout Logic
     const logoutAction = () => {
@@ -485,3 +486,54 @@ closeModals = function() {
         document.getElementById("generateAddressBtn").disabled = false;
     }, 300);
 };
+
+// --- TAWK.TO SMART LIVE CHAT ENGINE ---
+function initLiveChat() {
+    // 1. Retrieve the logged-in user's session data
+    const userData = JSON.parse(localStorage.getItem("nexus_user"));
+    
+    // 2. Initialize Tawk.to API
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_LoadStart = new Date();
+
+    // 3. Inject User Data so Andy knows exactly who is chatting
+    if (userData) {
+        window.Tawk_API.visitor = {
+            name: userData.full_name || "CoinNexus User",
+            email: userData.email || ""
+        };
+    }
+
+    // --- FIX: Adjust widget position to clear the mobile nav bar ---
+    window.Tawk_API.customStyle = {
+        visibility: {
+            desktop: {
+                position: 'br', // Bottom Right
+                xOffset: 20,
+                yOffset: 20
+            },
+            mobile: {
+                position: 'br', // Bottom Right
+                xOffset: 15,
+                yOffset: 85 // Pushes the widget up by 85px specifically on mobile screens
+            }
+        }
+    };
+
+    // 4. Inject the widget script into the DOM
+    const s1 = document.createElement("script");
+    const s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    
+    // IMPORTANT: Replace the URL below with your actual Tawk.to embed URL
+    s1.src = 'https://embed.tawk.to/6a57f84b7150471d4bbcee77/1jtjq3q22'; 
+    
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    
+    if (s0 && s0.parentNode) {
+        s0.parentNode.insertBefore(s1, s0);
+    } else {
+        document.head.appendChild(s1);
+    }
+}
