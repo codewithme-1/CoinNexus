@@ -86,7 +86,17 @@ function generateTxCard(tx, isDeposit) {
 
     // Use method from your database
     const methodText = tx.method ? tx.method.toUpperCase() : 'CRYPTO';
-    const amount = Math.abs(parseFloat(tx.amount || 0)).toFixed(2);
+    
+    // Dynamic Amount Calculation
+    let rawAmount = Math.abs(parseFloat(tx.amount || 0));
+    const EXCHANGE_RATE = 129.50;
+
+    // If it is an M-Pesa withdrawal, convert the USD database value back to KES for display
+    if (!isDeposit && tx.method && tx.method.toLowerCase() === 'mpesa') {
+        rawAmount = rawAmount * EXCHANGE_RATE;
+    }
+    
+    const amount = rawAmount.toFixed(2);
     
     // Determine currency symbol based on method
     const currencySymbol = (tx.method && tx.method.toLowerCase() === 'mpesa') ? 'KES ' : '$';
