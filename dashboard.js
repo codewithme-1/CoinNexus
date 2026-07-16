@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initClock();
     renderWatchlist();
     renderUserAssets();
-    initLiveChat(); // Added to trigger the Tawk.to chat widget on load
+    initLiveChat();
+    initMpesaCalculator();
     
     // Bind Logout Logic
     const logoutAction = () => {
@@ -173,7 +174,7 @@ function renderUserAssets() {
 
     const timeString = new Date().toLocaleTimeString();
 
-    container.innerHTML = assets.map(asset => `
+    let html = assets.map(asset => `
         <div class="crypto-card">
             <div class="crypto-card-top">
                 <div class="crypto-badge">
@@ -192,8 +193,19 @@ function renderUserAssets() {
             </div>
         </div>
     `).join('');
-}
 
+    // --- Inject Telegram Community Card ---
+    html += `
+        <div class="crypto-card" style="background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%); border: none; text-align: center; padding: 25px 20px;">
+            <div style="font-size: 3rem; color: white; margin-bottom: 10px;"><i class="fa-brands fa-telegram"></i></div>
+            <h3 style="color: white; margin-bottom: 5px;">Join the Community</h3>
+            <p style="color: #E2F3FC; font-size: 0.9rem; margin-bottom: 15px;">Connect with other traders, get live updates, and access exclusive signals.</p>
+            <a href="https://t.me/+uhjl6N7fJ3UyOTU0" target="_blank" style="display: inline-block; background: white; color: #229ED9; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-decoration: none; width: 100%;">Join Telegram</a>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
 // --- UI Interaction & Modals ---
 function openModal(id) {
     const modal = document.getElementById(id);
@@ -535,5 +547,37 @@ function initLiveChat() {
         s0.parentNode.insertBefore(s1, s0);
     } else {
         document.head.appendChild(s1);
+    }
+}
+
+// --- M-Pesa Withdrawal KES Calculator ---
+function initMpesaCalculator() {
+    const usdInput = document.getElementById("withMpesaAmount");
+    
+    if (usdInput) {
+        // Set the parent container to relative so the text can dock absolutely
+        const parent = usdInput.parentNode;
+        parent.style.position = "relative"; 
+
+        const kesDisplay = document.createElement("span");
+        kesDisplay.style.position = "absolute";
+        kesDisplay.style.right = "5px";
+        kesDisplay.style.top = "0"; // Docks directly across from the label
+        kesDisplay.style.fontSize = "0.85rem";
+        kesDisplay.style.fontWeight = "600";
+        kesDisplay.style.color = "#00e676";
+        kesDisplay.style.pointerEvents = "none";
+        
+        parent.insertBefore(kesDisplay, usdInput);
+
+        usdInput.addEventListener("input", (e) => {
+            const usdValue = parseFloat(e.target.value);
+            if (usdValue && usdValue > 0) {
+                const kesValue = (usdValue * EXCHANGE_RATE).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                kesDisplay.innerHTML = `≈ KES ${kesValue}`;
+            } else {
+                kesDisplay.innerHTML = "";
+            }
+        });
     }
 }
