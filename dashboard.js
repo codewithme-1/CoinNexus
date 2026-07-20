@@ -375,12 +375,18 @@ async function handleMpesaDeposit(e) {
 async function handleCryptoDeposit(e) {
     e.preventDefault();
     const network = document.getElementById("depCryptoNetwork").value;
+    const amountStr = document.getElementById("depCryptoAmount").value;
     const btn = document.getElementById("generateAddressBtn");
     
     const userSession = JSON.parse(localStorage.getItem("nexus_user"));
     const token = localStorage.getItem("nexus_session");
 
     if (!userSession) return showToast("Session expired. Please log in.", "fa-triangle-exclamation");
+
+    const amount = parseFloat(amountStr);
+    if (!amount || amount < 10) {
+        return showToast("Please enter a valid amount (Minimum $10).", "fa-triangle-exclamation");
+    }
 
     // Loading State
     btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Generating...`;
@@ -392,7 +398,12 @@ async function handleCryptoDeposit(e) {
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'generate_crypto_address',
-                payload: { userId: userSession.id, userToken: token, network: network }
+                payload: { 
+                    userId: userSession.id, 
+                    userToken: token, 
+                    network: network,
+                    amount: amount
+                }
             })
         });
 
@@ -411,7 +422,7 @@ async function handleCryptoDeposit(e) {
             if (instructionEl) {
                 const currencyName = result.currency ? result.currency.toUpperCase() : network;
                 const minAmount = result.min_amount ? result.min_amount : '10';
-                instructionEl.innerHTML = `Send funds exactly to this unique custodial address. <br><br><strong style="color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> Minimum deposit: ${minAmount} ${currencyName}</strong>. Amounts below this will be lost to network fees.`;
+                instructionEl.innerHTML = `Send exactly <strong>$${amount}</strong> to this unique custodial address. <br><br><strong style="color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> Network Minimum: ${minAmount} ${currencyName}</strong>. Amounts below the network minimum will be lost to network fees.`;
             }
 
             showToast("Address generated securely.", "fa-check");
