@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinNexus - Admin Command Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>:root{--bg-dark:#0b0e14;--bg-card:#131722;--bg-hover:#1e222d;--primary:#00e676;--text-main:#ffffff;--text-muted:#a0aec0;--danger:#ff4d4d;--border:#2a2e39}*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}body{background-color:var(--bg-dark);color:var(--text-main);display:flex;height:100vh;overflow:hidden}.sidebar{width:250px;background-color:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;transition:transform .3s ease;z-index:100}.brand{font-size:1.5rem;font-weight:800;padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;display:flex;align-items:center;gap:10px}.brand i{color:var(--primary)}.nav-link{padding:15px 20px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:12px;font-weight:600;cursor:pointer;transition:all .2s}.nav-link:hover,.nav-link.active{background-color:var(--bg-hover);color:var(--primary);border-right:3px solid var(--primary)}.nav-link i{width:20px;text-align:center}.logout-mt{margin-top:auto}.main-content{flex:1;display:flex;flex-direction:column;overflow-y:auto}.topbar{height:70px;background-color:var(--bg-card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 30px}.search-bar{background-color:var(--bg-dark);border:1px solid var(--border);border-radius:8px;padding:8px 15px;display:flex;align-items:center;gap:10px;width:300px}.search-bar input{background:0 0;border:none;color:#fff;outline:0;width:100%}.view-section{padding:30px;display:none}.view-section.active{display:block}.section-header{margin-bottom:25px}.section-header h2{font-size:1.8rem;margin-bottom:5px}.section-header p{color:var(--text-muted);font-size:.9rem}.table-container{background-color:var(--bg-card);border-radius:12px;border:1px solid var(--border);overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}th,td{padding:15px 20px;border-bottom:1px solid var(--border)}th{background-color:var(--bg-hover);color:var(--text-muted);font-size:.85rem;text-transform:uppercase;letter-spacing:1px}tr:hover{background-color:rgba(255,255,255,.02)}.badge{padding:5px 10px;border-radius:20px;font-size:.75rem;font-weight:600}.badge-pending{background-color:rgba(255,165,0,.2);color:orange}.badge-completed{background-color:rgba(0,230,118,.2);color:var(--primary)}.badge-rejected{background-color:rgba(255,77,77,.2);color:var(--danger)}.action-btn{background:0 0;border:none;cursor:pointer;padding:6px 12px;border-radius:6px;font-weight:600;font-size:.85rem;transition:.2s;margin:2px}.btn-approve{background-color:var(--primary);color:#000}.btn-approve:hover{opacity:.8}.btn-reject{background-color:var(--danger);color:#fff}.btn-reject:hover{opacity:.8}.btn-edit{border:1px solid var(--text-muted);color:var(--text-muted)}.btn-edit:hover{border-color:#fff;color:#fff}.menu-toggle{display:none;background:0 0;border:none;color:#fff;font-size:1.5rem;cursor:pointer}.mobile-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:90}.toast-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:9999}.toast{background-color:var(--bg-card);border-left:4px solid var(--primary);color:#fff;padding:15px 20px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.5);display:flex;align-items:center;gap:10px;transform:translateX(120%);transition:transform .3s ease}.toast.active{transform:translateX(0)}.loading-state{text-align:center;padding:40px;color:var(--text-muted)}.custom-modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px)}.custom-modal-overlay.active{display:flex}.custom-modal{background:var(--bg-card);border:1px solid var(--border);padding:25px;border-radius:12px;width:90%;max-width:400px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,.5)}.custom-modal h3{margin-bottom:10px;font-size:1.2rem}.custom-modal p{color:var(--text-muted);font-size:.9rem;margin-bottom:20px}.custom-input{width:100%;background:var(--bg-dark);border:1px solid var(--border);color:#fff;padding:12px;border-radius:8px;margin-bottom:20px;outline:0;font-size:1rem;text-align:center}.modal-actions{display:flex;gap:10px;justify-content:center}.modal-actions button{flex:1;padding:10px;font-size:1rem}@media(max-width:768px){.menu-toggle{display:block}.sidebar{position:fixed;height:100%;transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.mobile-overlay.active{display:block}.search-bar{display:none}.topbar{padding:0 20px}.view-section{padding:15px}table,thead,tbody,th,td,tr{display:block}thead tr{display:none}tr{border:1px solid var(--border);border-radius:8px;margin-bottom:15px;background:var(--bg-card);padding:5px}td{border:none;border-bottom:1px solid rgba(255,255,255,.05);position:relative;padding:12px 10px 12px 45%;text-align:right;min-height:45px;white-space:normal}td:last-child{border-bottom:none}td:before{content:attr(data-label);position:absolute;left:10px;top:12px;width:40%;text-align:left;font-weight:600;color:var(--text-muted);font-size:.75rem;text-transform:uppercase}}</style>
+</head>
+<body>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="brand"><i class="fa-brands fa-btc"></i> NEXUS ADMIN</div>
+        <div class="nav-link active" data-target="queue"><i class="fa-solid fa-list-check"></i> Clearance Queue</div>
+        <div class="nav-link" data-target="ledger"><i class="fa-solid fa-book-journal-whills"></i> Global Ledger</div>
+        <div class="nav-link" data-target="users"><i class="fa-solid fa-users"></i> Users & Balances</div>
+        <div class="nav-link logout-mt" id="adminLogoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Exit Admin</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+                <input type="text" id="adminSearch" placeholder="Search ID, email, or hash...">
+            </div>
+            <div style="font-weight: 600; display:flex; align-items:center; gap:15px;">
+                <button onclick="fetchModuleData(currentView)" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:1.2rem;" title="Refresh Data"><i class="fa-solid fa-rotate-right"></i></button>
+                <div><i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 5px;"></i> Admin</div>
+            </div>
+        </div>
+
+        <!-- MODULE A: Clearance Queue -->
+        <div id="queue-view" class="view-section active">
+            <div class="section-header">
+                <h2>Liquidation & Clearance Queue</h2>
+                <p>Review and process pending user withdrawals.</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>User ID</th>
+                            <th>Method</th>
+                            <th>Destination</th>
+                            <th>Deduction (USD)</th>
+                            <th>Payout Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="queueTableBody">
+                        <!-- Populated via admin.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MODULE B: Global Ledger -->
+        <div id="ledger-view" class="view-section">
+            <div class="section-header">
+                <h2>Global Ledger</h2>
+                <p>Immutable record of all deposits, conversions, and completed withdrawals.</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tx ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Method</th>
+                            <th>Net Value (USD)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTableBody">
+                        <!-- Populated via admin.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MODULE C: User Management -->
+        <div id="users-view" class="view-section">
+            <div class="section-header">
+                <h2>User Management Console</h2>
+                <p>Monitor accounts, audit balances, and apply manual ledger adjustments.</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name / Email</th>
+                            <th>Joined</th>
+                            <th>Available Balance (USD)</th>
+                            <th>Status</th>
+                            <th>Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Populated via admin.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="customConfirmModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <h3 id="confirmTitle">Confirm Action</h3>
+            <p id="confirmMessage">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button class="action-btn btn-edit" id="confirmCancelBtn">Cancel</button>
+                <button class="action-btn btn-approve" id="confirmOkBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Prompt (Input) Modal -->
+    <div id="customPromptModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <h3 id="promptTitle">Manual Adjustment</h3>
+            <p id="promptMessage">Enter the new EXACT USD balance:</p>
+            <input type="number" id="promptInput" class="custom-input" placeholder="0.00" step="0.01">
+            <div class="modal-actions">
+                <button class="action-btn btn-edit" id="promptCancelBtn">Cancel</button>
+                <button class="action-btn btn-approve" id="promptSubmitBtn">Update Balance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
