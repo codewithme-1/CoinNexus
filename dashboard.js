@@ -371,7 +371,7 @@ async function handleMpesaDeposit(e) {
     }
 }
 
-// NOWPayments Deposit Endpoint Hook
+// --- STATIC MANUAL CRYPTO DEPOSIT (NOWPayments Removed) ---
 async function handleCryptoDeposit(e) {
     e.preventDefault();
     const network = document.getElementById("depCryptoNetwork").value;
@@ -379,7 +379,6 @@ async function handleCryptoDeposit(e) {
     const btn = document.getElementById("generateAddressBtn");
     
     const userSession = JSON.parse(localStorage.getItem("nexus_user"));
-    const token = localStorage.getItem("nexus_session");
 
     if (!userSession) return showToast("Session expired. Please log in.", "fa-triangle-exclamation");
 
@@ -388,54 +387,31 @@ async function handleCryptoDeposit(e) {
         return showToast("Please enter a valid amount (Minimum $10).", "fa-triangle-exclamation");
     }
 
-    // Loading State
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Generating...`;
+    // UX Fake Loading State
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...`;
     btn.disabled = true;
 
-    try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({
-                action: 'generate_crypto_address',
-                payload: { 
-                    userId: userSession.id, 
-                    userToken: token, 
-                    network: network,
-                    amount: amount
-                }
-            })
-        });
+    // Simulate network delay before showing static address
+    setTimeout(() => {
+        // Hide the dropdown input, reveal the address view
+        document.getElementById("cryptoInputView").style.display = "none";
+        document.getElementById("cryptoQrView").style.display = "block";
 
-        const result = await response.json();
-
-        if (result.success) {
-            // Hide the dropdown input, reveal the address view
-            document.getElementById("cryptoInputView").style.display = "none";
-            document.getElementById("cryptoQrView").style.display = "block";
-
-            // Inject the live address
-            document.getElementById("generatedCryptoAddress").value = result.address;
-            
-            // Inject the strict minimum deposit warning to protect user funds
-            const instructionEl = document.querySelector(".crypto-instruction");
-            if (instructionEl) {
-                const currencyName = result.currency ? result.currency.toUpperCase() : network;
-                const minAmount = result.min_amount ? result.min_amount : '10';
-                instructionEl.innerHTML = `Send exactly <strong>$${amount}</strong> to this unique custodial address. <br><br><strong style="color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> Network Minimum: ${minAmount} ${currencyName}</strong>. Amounts below the network minimum will be lost to network fees.`;
-            }
-
-            showToast("Address generated securely.", "fa-check");
-        } else {
-            showToast(result.message, "fa-triangle-exclamation");
+        // Inject the client's STATIC TRC20 address
+        document.getElementById("generatedCryptoAddress").value = "TNYFnfg9eUvAmbXcRUTE1Bj6vPxsnbGDH4";
+        
+        // Inject the clean instruction without the manual support warning
+        const instructionEl = document.querySelector(".crypto-instruction");
+        if (instructionEl) {
+            instructionEl.innerHTML = `Send exactly <strong>$${amount}</strong> to the address below.`;
         }
-    } catch (err) {
-        showToast("Network error generating address.", "fa-wifi");
-    } finally {
+
+        showToast("Deposit instructions generated.", "fa-check");
+
         // Reset button state
         btn.innerHTML = `Generate Deposit Address`;
         btn.disabled = false;
-    }
+    }, 600);
 }
 
 
@@ -575,7 +551,7 @@ function initMpesaCalculator() {
         kesDisplay.style.right = "5px";
         kesDisplay.style.top = "0"; // Docks directly across from the label
         kesDisplay.style.fontSize = "0.85rem";
-        kesDisplay.style.fontWeight = "600";
+        kesDisplay.style.fontWeight = "600"; 
         kesDisplay.style.color = "#00e676";
         kesDisplay.style.pointerEvents = "none";
         
