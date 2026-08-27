@@ -202,8 +202,8 @@ async function startBot(botId) {
             document.getElementById("liveBotTitle").textContent = botId === 'btc-acc' ? "Bitcoin Accumulation" : "ETH DCA Pro";
             document.getElementById("liveBalance").textContent = `$${config.budget}`;
             
-            // Start the visual terminal
-            runTerminalSimulation(config.asset);
+            // Start the visual terminal with Logarithmic Growth Engine
+            runTerminalSimulation(config.asset, config.budget);
             showToast("Bot engine initiated. Funds locked.", "fa-rocket");
             
             // Sync UI balances immediately
@@ -220,7 +220,7 @@ async function startBot(botId) {
 }
 
 async function stopBot() {
-    clearInterval(activeSimulationInterval);
+    clearTimeout(activeSimulationInterval); // Adjusted to handle dynamic recursive timeouts
     const activeBotId = document.getElementById("activeBotId").value;
     const config = botStates[activeBotId];
     
@@ -266,36 +266,84 @@ async function stopBot() {
     }
 }
 
-function runTerminalSimulation(asset) {
+// --- LOGARITHMIC GROWTH SIMULATION ENGINE ---
+function runTerminalSimulation(asset, budget) {
     const consoleEl = document.getElementById("terminalConsole");
     let trades = 0;
     let pnl = 0;
+    const startTime = Date.now();
+    
+    // Create a dynamic massive finish line (e.g., 4x to 6x the stake)
+    const targetProfit = parseFloat(budget) * (Math.random() * 2.0 + 4.0);
 
-    activeSimulationInterval = setInterval(() => {
-        const isBuy = Math.random() > 0.5;
-        const price = asset === "BTC" ? (64000 + (Math.random() * 500)).toFixed(2) : (3400 + (Math.random() * 50)).toFixed(2);
-        
-        // Log entry
-        const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-        const typeClass = isBuy ? "log-buy" : "log-sell";
-        const actionText = isBuy ? "BUY" : "SELL";
-        
-        consoleEl.innerHTML += `<div class="log-entry"><span class="log-time">[${time}]</span> <span class="${typeClass}">${actionText} ${asset}USDT</span> @ $${price}</div>`;
-        consoleEl.scrollTop = consoleEl.scrollHeight; // Auto-scroll
-        
-        // Update stats
-        trades++;
-        const profitTick = (Math.random() * 2) - 0.8; // Slight positive bias
-        pnl += profitTick;
-        
-        document.getElementById("liveTrades").textContent = trades;
-        const pnlEl = document.getElementById("livePnl");
-        pnlEl.textContent = `${pnl >= 0 ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}`;
-        pnlEl.className = pnl >= 0 ? "pnl-positive" : "pnl-negative";
-        
-        document.getElementById("liveWinRate").textContent = `${(50 + (trades * 0.5)).toFixed(1)}%`; // Mock win rate
+    function scheduleNextTick() {
+        const elapsedMinutes = (Date.now() - startTime) / 60000;
+        let tickSpeed, winChance, stepAmount;
 
-    }, 3000); // New action every 3 seconds
+        // Phase 1: The Sprint (0 to 5 Minutes)
+        if (elapsedMinutes < 5) {
+            tickSpeed = Math.floor(Math.random() * 2000) + 2000; // Fast: 2 to 4 seconds
+            winChance = 0.85; // Heavy winning bias (85%)
+            stepAmount = targetProfit * (Math.random() * 0.01 + 0.005); // 0.5% to 1.5% of total target per win
+        } 
+        // Phase 2: The Grind (5+ Minutes)
+        else {
+            tickSpeed = Math.floor(Math.random() * 5000) + 5000; // Slow: 5 to 10 seconds
+            winChance = 0.55; // Tougher market conditions (55%)
+            stepAmount = targetProfit * (Math.random() * 0.005 + 0.002); // Small steady crawl
+        }
+
+        // The Safety Wall: If we approach the target finish line, completely plateau to preserve realism
+        if (pnl >= targetProfit * 0.95) {
+            winChance = 0.50; // Stagnation
+            stepAmount = targetProfit * 0.001; 
+        }
+
+        activeSimulationInterval = setTimeout(() => {
+            trades++;
+            const isWin = Math.random() < winChance;
+            let tradePnl = 0;
+            
+            if (isWin) {
+                tradePnl = stepAmount;
+                pnl += tradePnl;
+            } else {
+                // Losses are fractionally smaller than wins to ensure the net trend remains upward
+                tradePnl = stepAmount * (Math.random() * 0.5 + 0.3);
+                pnl -= tradePnl;
+                if (pnl < 0) pnl = Math.abs(pnl); // Prevent the overall run from turning negative early on
+            }
+
+            const price = asset === "BTC" ? (64000 + (Math.random() * 500)).toFixed(2) : (3400 + (Math.random() * 50)).toFixed(2);
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            
+            // Console Logging Engine
+            let logHtml = "";
+            if (isWin) {
+                logHtml = `<div class="log-entry"><span class="log-time">[${time}]</span> <span style="color: #00e676; font-weight: bold;">[SUCCESS]</span> Arbitrage cleared: +$${tradePnl.toFixed(2)} (${asset}/USDT) @ $${price}</div>`;
+            } else {
+                logHtml = `<div class="log-entry"><span class="log-time">[${time}]</span> <span style="color: var(--warning); font-weight: bold;">[HEDGE]</span> Rebalancing position: -$${tradePnl.toFixed(2)} (${asset}/USDT) @ $${price}</div>`;
+            }
+            
+            consoleEl.innerHTML += logHtml;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            // UI Updating
+            document.getElementById("liveTrades").textContent = trades;
+            const pnlEl = document.getElementById("livePnl");
+            pnlEl.textContent = `${pnl >= 0 ? '+' : '-'}$${Math.abs(pnl).toFixed(2)}`;
+            pnlEl.className = pnl >= 0 ? "pnl-positive" : "pnl-negative";
+            
+            // Fluctuating but realistic win rate UI
+            const displayedWinRate = (winChance * 100) - (Math.random() * 4);
+            document.getElementById("liveWinRate").textContent = `${displayedWinRate.toFixed(1)}%`;
+
+            scheduleNextTick(); // Recursive call for the next trade
+        }, tickSpeed);
+    }
+    
+    // Ignite the engine
+    scheduleNextTick();
 }
 
 // --- Utility ---
