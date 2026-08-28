@@ -113,34 +113,6 @@
         .toast.active{opacity:1;transform:translateY(0)}
         .toast i{color:var(--emerald);font-size:1.2rem}
     </style>
-    <style>
-    /* Force the entire page to fill the screen and not exceed it */
-    html, body {
-        height: 100%;
-        margin: 0;
-        overflow: hidden; /* Prevents the whole page from scrolling */
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* The main wrapper that will scroll */
-    .content-scroll {
-        flex: 1; /* Fills all available space between header and nav */
-        overflow-y: auto; /* Enables scrolling only inside this section */
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
-    }
-
-    /* Ensure bottom nav is always at the bottom */
-    .bottom-nav {
-        flex-shrink: 0; /* Prevents the nav bar from squishing */
-        height: 70px; /* Explicit height */
-        background: var(--surface);
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        border-top: 1px solid var(--border);
-    }
-</style>
 </head>
 <body>
 
@@ -244,39 +216,15 @@
                 <h3>Fund Account</h3>
                 <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <div class="method-toggle">
-                <button class="toggle-btn active" id="depMpesaBtn" onclick="switchDepMethod('mpesa')">M-Pesa</button>
-                <button class="toggle-btn" id="depCryptoBtn" onclick="switchDepMethod('crypto')">Crypto</button>
-            </div>
 
-            <!-- M-Pesa Inbound Flow -->
-            <form id="depMpesaForm" onsubmit="handleMpesaDeposit(event)">
-                <div class="form-group">
-                    <label>Amount (KES)</label>
-                    <div class="input-wrap right-icon">
-                        <input type="number" id="depKesAmount" placeholder="Min. KES 1290" required min="1290">
-                        <span class="static-icon" style="font-size: 0.9rem;">KES</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>M-Pesa Phone Number</label>
-                    <div class="input-wrap left-addon">
-                        <span class="static-addon">+254</span>
-                        <input type="tel" id="depPhone" placeholder="712345678" required pattern="[0-9]{9}">
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="stkBtn">Send STK Push</button>
-            </form>
-
-            <!-- Crypto Inbound Flow (NOWPayments Intercept) -->
-            <form id="depCryptoForm" style="display: none;" onsubmit="handleCryptoDeposit(event)">
+           <!-- Crypto Inbound Flow (NOWPayments Intercept) -->
+            <form id="depCryptoForm" onsubmit="handleCryptoDeposit(event)">
                 <div id="cryptoInputView">
                     <!-- Added Amount Field -->
                     <div class="input-group" style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted);">Amount (USD)</label>
                         <div style="position: relative;">
-                            <input type="number" id="depCryptoAmount" placeholder="Min. 15" min="10" step="1" required 
+                            <input type="number" id="depCryptoAmount" placeholder="Min. 10" min="10" step="1" required 
                                    style="width: 100%; padding: 12px 15px; background: #0b0e14; border: 1px solid #2a2e39; border-radius: 8px; color: white; outline: none; font-size: 1rem;">
                             <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-weight: bold;">USD</span>
                         </div>
@@ -325,32 +273,8 @@
                 <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="method-toggle">
-                <button class="toggle-btn active" id="withMpesaBtn" onclick="switchWithMethod('mpesa')">M-Pesa</button>
-                <button class="toggle-btn" id="withCryptoBtn" onclick="switchWithMethod('crypto')">Crypto</button>
-            </div>
-
-            <!-- M-Pesa Outbound Flow -->
-            <form id="withMpesaForm" onsubmit="handleWithdrawal(event, 'mpesa')">
-                <div class="form-group">
-                    <label>Amount (USD)</label>
-                    <div class="input-wrap right-icon">
-                        <input type="number" id="withMpesaAmount" placeholder="Amount to settle" required min="10">
-                        <span class="static-icon">$</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Receiving M-Pesa Number</label>
-                    <div class="input-wrap left-addon">
-                        <span class="static-addon">+254</span>
-                        <input type="tel" id="withPhone" placeholder="712345678" required pattern="[0-9]{9}">
-                    </div>
-                </div>
-                <button type="submit" class="btn-submit" id="withMpesaSubmit">Submit Request to Pending</button>
-            </form>
-
             <!-- Crypto Outbound Flow -->
-            <form id="withCryptoForm" style="display: none;" onsubmit="handleWithdrawal(event, 'crypto')">
+            <form id="withCryptoForm" onsubmit="handleWithdrawal(event, 'crypto')">
                 <div class="form-group">
                     <label>Amount (USD)</label>
                     <div class="input-wrap right-icon">
@@ -419,5 +343,6 @@
      
     <script src="i18n.js"></script>
     <script src="dashboard.js"></script>
+    
 </body>
 </html>
