@@ -371,6 +371,18 @@ async function handleMpesaDeposit(e) {
     }
 }
 
+// --- DYNAMIC WALLET ADDRESS CONFIGURATION ---
+const WALLET_ADDRESSES = {
+    USDTTRC20: {
+        address: "TDv757WJrCwbzuwsvt4wLBDh2LSVtKsSj2",
+        label: "USDT (TRC20)"
+    },
+    BTC: {
+        address: "bc1qaa52lxtqlg3gyc2t6srkw67f8czdyz2hns9ypj",
+        label: "BTC"
+    }
+};
+
 // --- STATIC MANUAL CRYPTO DEPOSIT (NOWPayments Removed) ---
 async function handleCryptoDeposit(e) {
     e.preventDefault();
@@ -387,6 +399,8 @@ async function handleCryptoDeposit(e) {
         return showToast("Please enter a valid amount (Minimum $10).", "fa-triangle-exclamation");
     }
 
+    const selectedWallet = WALLET_ADDRESSES[network] || WALLET_ADDRESSES.USDTTRC20;
+
     // UX Fake Loading State
     btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...`;
     btn.disabled = true;
@@ -397,13 +411,13 @@ async function handleCryptoDeposit(e) {
         document.getElementById("cryptoInputView").style.display = "none";
         document.getElementById("cryptoQrView").style.display = "block";
 
-        // Inject the client's STATIC TRC20 address
-        document.getElementById("generatedCryptoAddress").value = "TNYFnfg9eUvAmbXcRUTE1Bj6vPxsnbGDH4";
+        // Inject the client's dynamic address based on selection
+        document.getElementById("generatedCryptoAddress").value = selectedWallet.address;
         
-        // Inject the clean instruction without the manual support warning
+        // Inject the clean instruction with the correct dynamic asset label
         const instructionEl = document.querySelector(".crypto-instruction");
         if (instructionEl) {
-            instructionEl.innerHTML = `Send exactly <strong>$${amount}</strong> to the address below.`;
+            instructionEl.innerHTML = `Send exactly <strong>$${amount}</strong> equivalent in <strong>${selectedWallet.label}</strong> to the address below.`;
         }
 
         showToast("Deposit instructions generated.", "fa-check");
