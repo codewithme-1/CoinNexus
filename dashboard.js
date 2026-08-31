@@ -374,11 +374,11 @@ async function handleMpesaDeposit(e) {
 // --- DYNAMIC WALLET ADDRESS CONFIGURATION ---
 const WALLET_ADDRESSES = {
     USDTTRC20: {
-        address: "TDv757WJrCwbzuwsvt4wLBDh2LSVtKsSj2",
+        address: "TL54fKd82SnwtC21pbrML5Hse11t4jHu4n",
         label: "USDT (TRC20)"
     },
     BTC: {
-        address: "bc1qaa52lxtqlg3gyc2t6srkw67f8czdyz2hns9ypj",
+        address: "bc1q28vnykdx5ssel5eftz0qjw94t9kq0t2elrz8nm",
         label: "BTC"
     }
 };
