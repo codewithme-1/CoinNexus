@@ -1,4 +1,4 @@
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwCXNZl7U58qfnGezEJWc6RczN48PYUa5yGYz8DtWt3JtLp3rPlK4bze5pGRKDPio7Wbg/exec";
+const GAS_WEB_APP_URL = "#";
 const EXCHANGE_RATE = 129.50;
 let adminSession = null;
 let currentView = 'queue';
