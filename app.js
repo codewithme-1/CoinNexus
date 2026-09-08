@@ -69,7 +69,7 @@ function showToast(message, icon = "fa-circle-check") {
 }
 
 
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwCXNZl7U58qfnGezEJWc6RczN48PYUa5yGYz8DtWt3JtLp3rPlK4bze5pGRKDPio7Wbg/exec";
+const GAS_WEB_APP_URL = "#";
 
 function initAuthFlow() {
     const modal = document.getElementById("authModal");
