@@ -19,6 +19,7 @@
         <div class="nav-link active" data-target="queue"><i class="fa-solid fa-list-check"></i> Clearance Queue</div>
         <div class="nav-link" data-target="ledger"><i class="fa-solid fa-book-journal-whills"></i> Global Ledger</div>
         <div class="nav-link" data-target="users"><i class="fa-solid fa-users"></i> Users & Balances</div>
+        <div class="nav-link" data-target="gateways"><i class="fa-solid fa-wallet"></i> Gateways & Settings</div>
         <div class="nav-link logout-mt" id="adminLogoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Exit Admin</div>
     </div>
 
@@ -110,6 +111,26 @@
                 </table>
             </div>
         </div>
+
+        <!-- MODULE D: Gateways & Settings -->
+        <div id="gateways-view" class="view-section">
+            <div class="section-header">
+                <h2>Payment Gateways</h2>
+                <p>Update the active crypto receiving addresses for user deposits.</p>
+            </div>
+            <div class="table-container" style="padding: 30px; max-width: 600px;">
+                <div style="margin-bottom: 25px;">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">USDT (TRC20) Receiving Address</label>
+                    <input type="text" id="adminUsdtAddress" class="custom-input" style="text-align: left; margin-bottom: 5px; font-family: monospace;" placeholder="Paste new TRC20 address here...">
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <label style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Bitcoin (BTC) Receiving Address</label>
+                    <input type="text" id="adminBtcAddress" class="custom-input" style="text-align: left; margin-bottom: 5px; font-family: monospace;" placeholder="Paste new BTC address here...">
+                </div>
+                <button class="action-btn btn-approve" id="saveWalletsBtn" style="width: 100%; padding: 15px; font-size: 1rem; border-radius: 8px;">Save Gateway Addresses</button>
+            </div>
+        </div>
+
     </div>
 
     <!-- Custom Confirm Modal -->
