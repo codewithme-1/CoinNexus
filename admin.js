@@ -135,6 +135,9 @@ function bindUIEvents() {
         sessionStorage.removeItem("nexus_admin_master");
         window.location.reload();
     });
+
+    // Bind Gateway Wallet Save Action
+    document.getElementById('saveWalletsBtn').addEventListener('click', executeWalletUpdate);
 }
 
 function switchAdminView(viewId, element) {
@@ -145,7 +148,10 @@ function switchAdminView(viewId, element) {
     document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
     document.getElementById(viewId + '-view').classList.add('active');
     
-    fetchModuleData(viewId);
+    // Don't poll DB for the gateways static view
+    if(viewId !== 'gateways') {
+        fetchModuleData(viewId);
+    }
 }
 
 function openMobileMenu() {
@@ -167,7 +173,7 @@ function startLivePolling() {
 }
 
 async function fetchModuleData(view) {
-    if(!adminSession) return;
+    if(!adminSession || view === 'gateways') return;
     
     let actionType = '';
     let targetBody = '';
@@ -440,6 +446,53 @@ async function executeBalanceUpdate(userId, newBalance) {
         }
     } catch (err) {
         showAdminToast("Network error.", "fa-wifi");
+    }
+}
+
+// --- GATEWAY UPDATE ENGINE ---
+async function executeWalletUpdate() {
+    const usdtAddress = document.getElementById('adminUsdtAddress').value.trim();
+    const btcAddress = document.getElementById('adminBtcAddress').value.trim();
+    const btn = document.getElementById('saveWalletsBtn');
+
+    if (!usdtAddress && !btcAddress) {
+        showAdminToast("Please enter at least one address to update.", "fa-triangle-exclamation");
+        return;
+    }
+
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving to Server...`;
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'admin_update_wallets',
+                payload: { 
+                    adminId: adminSession.id, 
+                    adminToken: adminSession.token, 
+                    adminPassword: adminSession.password,
+                    usdtAddress: usdtAddress, 
+                    btcAddress: btcAddress 
+                }
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showAdminToast("Gateway addresses updated successfully.", "fa-check");
+            // Clear inputs after successful save
+            document.getElementById('adminUsdtAddress').value = '';
+            document.getElementById('adminBtcAddress').value = '';
+        } else {
+            showAdminToast(result.message || "Failed to update gateways.", "fa-xmark");
+        }
+    } catch (err) {
+        showAdminToast("Network error communicating with core.", "fa-wifi");
+    } finally {
+        btn.innerHTML = `Save Gateway Addresses`;
+        btn.disabled = false;
     }
 }
 
