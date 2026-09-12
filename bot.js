@@ -87,9 +87,9 @@ function validateFunding() {
     const widgetMsg = document.getElementById("jitMessage");
     const widgetBtn = document.getElementById("jitActionBtn");
 
-    if (!inputBudget || inputBudget < 10) {
+    if (!inputBudget || inputBudget < 50) {
         widget.style.display = "none";
-        saveBtn.disabled = false;
+        saveBtn.disabled = true; // Lock bot configuration if under $50 minimum
         return;
     }
 
